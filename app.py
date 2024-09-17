@@ -140,7 +140,7 @@ with col1:
 with col2:
     # Add the explanation text in the second column with smaller font size
     st.markdown("""
-    <div style="font-size:12px; color: darkgray; margin-top: 50px;">
+    <div style="font-size:12px; color: darkgray; margin-top: 100px;">
     <p>An inverted yield curve is a clear signal of an impending recession. It occurs when short-term interest rates are higher than long-term rates, reflecting pessimism about future economic growth. 
     </div>
     <div style="font-size:12px; color: darkgray;">
