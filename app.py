@@ -35,12 +35,13 @@ data['Yield Spread'] = data["10Y US Treasury Bond"] - data["3M Treasury Bill"]
 # Reset index to convert the Date from index to a column
 df = data.reset_index()
 # Assuming df is already defined in your code
-df['Date'] = pd.to_datetime(df['Date'])
+df['Date'] = pd.to_datetime(df['Date']).dt.tz_localize(None)
+#100 days chart
+hundred_days = datetime.now() - timedelta(days=100)
+df_hundred = df[df['Date']>=hundred_days]
 
 # Set up the plotting environment
 fig1=plt.figure(figsize=(10,5))
-
-
 
 # Plot Yield Spread with shading
 df['Positive Spread'] = df['Yield Spread'].apply(lambda x: x if x > 0 else 0)
@@ -60,19 +61,21 @@ sns.lineplot(x='Date', y='3M Treasury Bill', data=df, color='lightblue',  label=
 sns.lineplot(x='Date', y='10Y US Treasury Bond', data=df, color='#004B87', label='10Y Bond Yield')
 
 # Annotate last values
-last_index = df.index[-1]
-plt.annotate(f'{df["3M Treasury Bill"].iloc[-1]:.2f}', 
-             (df['Date'].iloc[-1], df['3M Treasury Bill'].iloc[-1]),
-             textcoords="offset points",
-             xytext=(10, 0),
-             ha='left',
-             color='#004B87')
-plt.annotate(f'{df["10Y US Treasury Bond"].iloc[-1]:.2f}', 
-             (df['Date'].iloc[-1], df['10Y US Treasury Bond'].iloc[-1]),
-             textcoords="offset points",
-             xytext=(10, 0),
-             ha='left',
-             color='#004B87')
+# last_index = df.index[-1]
+# plt.annotate(f'{df["3M Treasury Bill"].iloc[-1]:.2f}', 
+#              (df['Date'].iloc[-1], df['3M Treasury Bill'].iloc[-1]),
+#              textcoords="offset points",
+#              fontsize = 8,
+#              xytext=(10, 0),
+#              ha='left',
+#              color='#004B87')
+# plt.annotate(f'{df["10Y US Treasury Bond"].iloc[-1]:.2f}', 
+#              (df['Date'].iloc[-1], df['10Y US Treasury Bond'].iloc[-1]),
+#              textcoords="offset points",
+#              fontsize = 8,
+#              xytext=(10, 0),
+#              ha='left',
+#              color='#004B87')
 
 # Define the positions of the ticks and their labels for the y-axis
 y_tick_positions = [-3, 0, 8]
@@ -121,6 +124,30 @@ plt.legend(frameon=False, fontsize=7)
 # Set the ticks on the y-axis
 plt.yticks(ticks=y_tick_positions, labels=y_tick_labels)
 
+
+# Set up the plotting environment for 100 days chart
+fig2=plt.figure(figsize=(8,6.5))
+# Plot 3M Treasury Bill
+sns.lineplot(x='Date', y='3M Treasury Bill', data=df_hundred, color='lightblue',  label='3M Bill Yield')
+# Plot 10Y US Treasury Bond
+sns.lineplot(x='Date', y='10Y US Treasury Bond', data=df_hundred, color='#004B87', label='10Y Bond Yield')
+# Remove the frame (spines)
+for spine in plt.gca().spines.values():
+    spine.set_visible(False)
+# Customize the plot
+plt.title('Last 100 days', fontsize=14, loc='left', color='#004B87')
+# No axis' labels
+plt.xlabel('')
+plt.ylabel('')
+# Apply tight layout to remove extra padding
+plt.tight_layout()
+plt.legend('', frameon=False)
+# Define the positions of the ticks and their labels for the y-axis
+y_tick_positions_hundred = [4,5]
+y_tick_labels_hundred = ['4%', '5%']
+# Set the ticks on the y-axis
+plt.yticks(ticks=y_tick_positions_hundred, labels=y_tick_labels_hundred)
+
 #######################################
 ##--JOB-LESS-CLAIMS####################
 #######################################
@@ -144,7 +171,7 @@ last_two_years_df = jobless_claims_df[jobless_claims_df['Date'] >= two_years_ago
 
 #### Ploting jobless claims
 # Set the plot size (optional)
-fig2=plt.figure(figsize=(10, 2))
+fig3=plt.figure(figsize=(10, 3))
 
 # Create a line chart using Seaborn
 sns.lineplot(x='Date', y='Jobless Claims', data=last_two_years_df)
@@ -159,8 +186,8 @@ plt.gca().spines['right'].set_visible(False)
 plt.gca().spines['left'].set_color('black')
 plt.gca().spines['bottom'].set_color('black')
 #Adjusting axis size
-plt.xticks(fontsize=6)  
-plt.yticks(fontsize=6)
+plt.xticks(fontsize=5)  
+plt.yticks(fontsize=5)
 #Removing axis titles
 plt.xlabel('') #x axis
 plt.ylabel('') #y axis
@@ -180,17 +207,21 @@ plt.show()
 st.set_page_config(layout="wide")
 
 # Set the title for the dashboard
-st.markdown("<h1 style='color: #004B87; font-size: 35px;'>Recession Upcoming?</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color: #004B87; font-size: 50px;'>Recession Upcoming?</h1>", unsafe_allow_html=True)
 
 ####FIRST PART YIELD CURVE
 # Create two columns: one for the chart (larger) and one for the text (smaller)
-col1, col2 = st.columns([4, 1])  # 4/1 split to make the chart larger
+col1, col2, col3 = st.columns([2.5, 1.5, 1])  # 4/1 split to make the chart larger
 
 with col1:
     # Display fig1 (yield curve) plot in the first column (larger column)
     st.pyplot(fig1)
 
-with col2:
+with col2: 
+    # Display fig2 (yield curve 100 days) plot in the second column (medium column)
+    st.pyplot(fig2)
+
+with col3:
     # Add the explanation text in the second column with smaller font size
     st.markdown("""
     <div style="font-size:12px; color: darkgray; margin-top: 50px;">
@@ -209,11 +240,11 @@ st.markdown("<div style='margin:60px 0;'></div>", unsafe_allow_html=True)
 ######
 
 ###SECOND PART JOBLESS CLAIMS
-col3, col4 = st.columns([4,1])
-with col3:
-    # Display fig1 (yield curve) plot in the first column (larger column)
-    st.pyplot(fig2)
+col4, col5 = st.columns([4,1])
 with col4:
+    # Display fig1 (yield curve) plot in the first column (larger column)
+    st.pyplot(fig3)
+with col5:
     # Add the explanation text in the second column with smaller font size
     st.markdown("""
     <div style="font-size:12px; color: darkgray; margin-top: 50px;">
