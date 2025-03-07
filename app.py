@@ -9,31 +9,51 @@ from datetime import datetime, timedelta
 import datetime as dt
 from fredapi import Fred
 
+# credentials for FED databank API
+fred = Fred(api_key='cd9da7549b07c0b28b7882bd7a016187')
+
 ##""""""""""Getting the data"""""""""##
 
 ###################################################
 #####--YIELD-CURVE-INVERSION--#####################
 ###################################################
 
-# Define the tickers for 10-year US Treasury Bond and 3-month Treasury Bill
-tickers = ["^TNX", "^IRX"]
+import streamlit as st
+import yfinance as yf
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime, timedelta
+import datetime as dt
+from fredapi import Fred
 
-#Define date_end, always previous day
-# Get today's date
-today = datetime.today()
-# Calculate yesterday's date
-yesterday = today - timedelta(days=1)
+##""""""""""Getting the data"""""""""##
 
-# Download the data from Yahoo Finance
-data = yf.download(tickers, start="1990-01-01", end=yesterday)['Adj Close']
-# Rename columns for better readability
-data.columns = ["3M Treasury Bill","10Y US Treasury Bond",]
-# Drop rows with missing values to avoid plotting errors
-data = data.dropna()
-# Calculate the yield spread
-data['Yield Spread'] = data["10Y US Treasury Bond"] - data["3M Treasury Bill"]
+###################################################
+#####--YIELD-CURVE-INVERSION--#####################
+###################################################
+
+fred = Fred(api_key='cd9da7549b07c0b28b7882bd7a016187')
+
+# Definir fechas
+start_date = "1990-01-01"
+end_date = datetime.today().strftime('%Y-%m-%d')
+
+# Obtener datos desde FRED
+dgs10 = fred.get_series("DGS10", start_date, end_date)  # 10Y Treasury Bond
+dgs3mo = fred.get_series("DGS3MO", start_date, end_date)  # 3M Treasury Bill
+
+# Crear DataFrame
+df_fed = pd.DataFrame({
+    'Date': dgs10.index,
+    '10Y US Treasury Bond': dgs10.values,
+    '3M Treasury Bill': dgs3mo.values
+}).dropna()
+
+# Calcular la diferencia de rendimiento
+df_fed['Yield Spread'] = df_fed["10Y US Treasury Bond"] - df_fed["3M Treasury Bill"]
 # Reset index to convert the Date from index to a column
-df = data.reset_index()
+df = df_fed#.reset_index()
 # Assuming df is already defined in your code
 df['Date'] = pd.to_datetime(df['Date']).dt.tz_localize(None)
 #100 days chart
@@ -153,7 +173,6 @@ plt.yticks(ticks=y_tick_positions_hundred, labels=y_tick_labels_hundred)
 #######################################
 
 # launching FRED
-fred = Fred(api_key='cd9da7549b07c0b28b7882bd7a016187')
 # Retrieve initial jobless claims data (FRED series ID: ICSA)
 jobless_claims = fred.get_series('ICSA')
 # Convert the data to a DataFrame
