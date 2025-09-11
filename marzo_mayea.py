@@ -115,9 +115,9 @@ st.markdown(
     f"<h2>Existe una leve descorreclación entre días de marzo calurosos y días de mayo fríos ({correlation:.2f}). Es decir, no existe relación causa efecto y ambos fenómenos son independientes.</h2>",
     unsafe_allow_html=True
 )
-
+st.write("")
 # Crear columnas: 2/3 para gráfico, 1/3 para anotaciones
-col1, col2 = st.columns([2, 1])
+col1, col2, col3 = st.columns([2,0.1, 1])
 
 with col1:
 
@@ -163,7 +163,8 @@ with col1:
     # Mostrar en Streamlit
     st.pyplot(fig)
 
-with col2:
+with col3:
+
     ###################### ANOTACIONES ##########################
     st.markdown("### 🔎 Explicación del gráfico")
     st.markdown("""
@@ -191,6 +192,6 @@ with col2:
 
 #info final
 st.markdown(
-    "<p style='text-align: right; font-style: italic;'>Estación Meteorológica de Madrid (Cuatro Vientos)</p>",
+    "<p style='text-align: left; font-style: italic;'>Fuente: Estación Meteorológica de Madrid (Cuatro Vientos)</p>",
     unsafe_allow_html=True
 )
