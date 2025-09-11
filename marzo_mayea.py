@@ -13,11 +13,10 @@ sns.set_theme(style="whitegrid")
 st.set_page_config(layout="wide")
 
 
-# titulo (añadir emoji de sol)
-st.title('Cuando en marzo **mayea ☀️**,  en mayo NO **marcea 😎**')
+
 # st.markdown(
 #     """
-#     # Cuando en marzo **mayea ☀️**  
+#     # Cuando en marzo **may#ea ☀️**  
 #     # en mayo no **marcea 🥶**
 #     """
 # )
@@ -99,36 +98,94 @@ df_grouped = df_filtered.groupby('year')[['marzo_mayea', 'mayo_marcea']].sum().r
 # #sorting values
 df_sorted = df_grouped.sort_values(by='year', ascending=True)
 
-# Crear figura en streamlit
-fig, ax = plt.subplots(figsize=(12, 6))
+###################################################################################################################################################################################
+########################################################STREAMLIT####################################################################################################################
+###################################################################################################################################################################################
 
-# Dibujar líneas con seaborn, reducri tamaño de los marcadores
-sns.lineplot(
-            data=df_sorted
-             , x="year"
-             , y="marzo_mayea"
-             , marker="o"
-             , markersize=5
-             , label="#dias marzo caluroso"
-             , color="#F5BCA0"
-            #  , ax=ax
-             )
-sns.lineplot(
-            data=df_sorted
-             , x="year"
-             , y="mayo_marcea"
-             , marker="o"
-             , markersize=5
-             , label="#dias mayo frío"
-             , color="#99B7CF"
-            #  , ax=ax
-             )
+#########################TITULO##########################
+# titulo (añadir emoji de sol)
+#titulo con fuente 20 y negrita en markdown
+st.markdown("<h1 style='font-size: 60px; font-weight: bold;'>Cuando en marzo <b>mayea ☀️</b>, en mayo NO <b>marcea 😎</b></h1>", unsafe_allow_html=True)
+# st.title('Cuando en marzo **mayea ☀️**,  en mayo NO **marcea 😎**')
 
-#mostrar grafico sin titulo
-plt.ylabel('Número de Días')
-plt.grid(False)
-# Mostrar en Streamlit
-st.pyplot(fig)
+#########################TEXTO##########################
+#correlacion entre mayea y marcea
+correlation = df_sorted['marzo_mayea'].corr(df_sorted['mayo_marcea'])
+st.markdown(
+    f"<h2>Existe una leve descorreclación entre días de marzo calurosos y días de mayo fríos ({correlation:.2f}). Es decir, no existe relación causa efecto y ambos fenómenos son independientes.</h2>",
+    unsafe_allow_html=True
+)
+
+# Crear columnas: 2/3 para gráfico, 1/3 para anotaciones
+col1, col2 = st.columns([2, 1])
+
+with col1:
+
+#######################GRAFICO##########################
+    # Crear figura en streamlit
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    # Dibujar líneas con seaborn, reducri tamaño de los marcadores
+    sns.lineplot(
+                data=df_sorted
+                , x="year"
+                , y="marzo_mayea"
+                , marker="o"
+                , markersize=4
+                , label="#dias marzo caluroso"
+                , color="#F5BCA0"
+                #  , ax=ax
+                )
+    sns.lineplot(
+                data=df_sorted
+                , x="year"
+                , y="mayo_marcea"
+                , marker="o"
+                , markersize=4
+                , label="#dias mayo frío"
+                , color="#99B7CF"
+                #  , ax=ax
+                )
+
+    #quitar borde de la leyenda
+    legend = plt.legend(frameon=False, fontsize=8, loc='upper right')
+    #mostrar grafico sin titulo
+    plt.ylabel('Número de Días', fontsize=8)
+    #eliminar xlabel
+    plt.xlabel('')
+    #quitar grid
+    plt.grid(False)
+    #quitar bordes
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.gca().spines['left'].set_visible(False)
+    plt.gca().spines['bottom'].set_visible(False)
+    # Mostrar en Streamlit
+    st.pyplot(fig)
+
+with col2:
+    ###################### ANOTACIONES ##########################
+    st.markdown("### 🔎 Explicación del gráfico")
+    st.markdown("""
+    - **Días calurosos en marzo (`mayeo`)**  
+      - Se contabiliza un día cuando la **temperatura máxima ≥ 20 °C**.  
+      - Es un umbral alto para marzo, ya que aún es final de invierno/inicio de primavera.  
+      - Representa la aparición de episodios **inusualmente cálidos** para esa época.  
+
+    - **Días fríos en mayo (`marceo`)**  
+      - Se contabiliza un día cuando la **temperatura máxima < 18 °C**.  
+      - En mayo se espera un clima más templado, por lo que días bajo este límite se consideran **anómalamente fríos**.  
+
+    👉 **Interpretación general del gráfico**  
+    - La línea **naranja** muestra la evolución anual de los **días cálidos en marzo**.  
+    - La línea **azul** refleja los **días fríos en mayo**.  
+    - Ambas series **no evolucionan al unísono**, lo que explica esa **ligera descorrelación**:  
+      un año con muchos días cálidos en marzo no implica necesariamente que en mayo haya una cantidad similar de días fríos.  
+
+    🚀 **Conclusión**  
+    - El refrán popular *"Cuando en marzo mayea, en mayo marcea"* es falaz, ya que **no se sostiene con los datos**.
+    """)
+
 
 
 
