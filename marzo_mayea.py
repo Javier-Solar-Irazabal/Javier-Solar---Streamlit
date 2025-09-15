@@ -131,7 +131,7 @@ with col1:
                 , x="year"
                 , y="marzo_mayea"
                 , marker="o"
-                , markersize=5
+                , markersize=4
                 , label="#dias marzo caluroso"
                 , color="#F5BCA0"
                 #  , ax=ax
@@ -141,7 +141,7 @@ with col1:
                 , x="year"
                 , y="mayo_marcea"
                 , marker="o"
-                , markersize=5
+                , markersize=4
                 , label="#dias mayo frío"
                 , color="#99B7CF"
                 #  , ax=ax
