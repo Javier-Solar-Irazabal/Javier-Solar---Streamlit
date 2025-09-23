@@ -107,7 +107,7 @@ plt.show()
 
 # Create columns: 2/3 for gráfico, 1/3 for anotaciones
 
-col1, col2= st.columns([4, 1])
+col1, col2= st.columns([4, 1.25])
 
 with col1:
     st.pyplot(plt)
