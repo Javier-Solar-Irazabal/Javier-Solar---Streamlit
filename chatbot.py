@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import requests
 import json
+
+
 # Obtener la lista de modelos disponibles desde OpenRouter
 resp = requests.get("https://openrouter.ai/api/v1/models")
 resp.raise_for_status()
@@ -39,7 +41,9 @@ if sidebar_api_key and sidebar_api_key.startswith("sk-or-"):
     balance_file = st.sidebar.file_uploader("Balance.xlsx", type="xlsx")
     cash_file = st.sidebar.file_uploader("Cashflow.xlsx", type="xlsx")
     income_file = st.sidebar.file_uploader("Income.xlsx", type="xlsx")
-    model = st.sidebar.selectbox("Selecciona un modelo de IA:", free_models, index=0)  
+    # selectbox con modelos free, nex-agi/deepseek-v3.1-nex-n1:free por defecto
+    model = st.sidebar.selectbox("Selecciona un modelo de IA:", free_models, index=free_models.index("nex-agi/deepseek-v3.1-nex-n1:free") if "nex-agi/deepseek-v3.1-nex-n1:free" in free_models else 0)
+    # model = st.sidebar.selectbox("Selecciona un modelo de IA:", free_models, index=0)  
 # --------------------------------------------------
 st.title("📊 Chatbot financiero")
 st.write("Powered by OpenRouter.ai")
