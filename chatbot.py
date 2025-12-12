@@ -17,7 +17,6 @@ free_models = [
 
 
 # --------- API KEY DIRECTA (SIN ENTORNOS) ---------
-# API_KEY = "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"  # <-- pega aquí tu clave sk-or-...
 
 #on sidebar input box with APIKEY text
 st.sidebar.header("Parametros")
@@ -118,3 +117,4 @@ if balance_file and cash_file and income_file:
 
 else:
     st.info("Sube los 3 archivos Excel para empezar.")
+
