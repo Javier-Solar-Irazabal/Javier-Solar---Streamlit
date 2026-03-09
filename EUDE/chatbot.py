@@ -11,28 +11,32 @@ import json
 # acordaos de instalar streamlit (pip install streamlit), así como las demás librerías que se usan en el código (pandas, requests)
 
 # Obtener la lista de modelos gratuitos disponibles desde OpenRouter
+# Aquí nuevamente empleamos la librería requests para hacer una llamada a la API de OpenRouter y obtener la lista de modelos disponibles. Luego filtramos aquellos que son gratuitos (que terminan con ":free") para mostrarlos en el selectbox de la app.
 resp = requests.get("https://openrouter.ai/api/v1/models")
+# Comprobamos que la respuesta de la API es correcta (código 200). Si no es así, se lanzará una excepción y se mostrará un mensaje de error.
 resp.raise_for_status()
+# Convertimos la respuesta en un diccionario de Python para poder trabajar con ella. La respuesta de la API suele venir en formato JSON, por lo que utilizamos el método .json() para convertirla en un diccionario de Python.
 data = resp.json()
 # Filtrar modelos gratuitos, models ending with :free
+# Acudimos al diccionario obtenido en el paso anterior y extraemos los modelos que terminan con ":free". Esto nos permitirá mostrar solo los modelos gratuitos en el selectbox de la app.
 free_models = [
     m["id"] for m in data["data"]
     if m["id"].endswith(":free")
 ]
 # Definir las instrucciones del sistema para el modelo de IA, lo utilizaremos más adelante cuando configuremos las llamadas a los modelos. 
 # Queremos definir cómo queremos que se comporte el modelo.
+# Podéis modificar estas instrucciones para que el modelo se comporte de la forma que queráis, por ejemplo, si queréis que el modelo se centre en un sector concreto, o que haga comparativas sectoriales, o que se centre en un tipo de análisis concreto, etc.
 instrucciones = """Eres un analista financiero experto. 
                 Te van a preguntar sobre el ticker seleccionado en el selectbox st.selectbox('Selecciona un ticker:', tickers).
                 Incluye por favor siempre que sea posible comparativas sectoriales cuando muestres datos o calcules ratios. 
                 Añade tambien al principio del todo nombre de compañia y a que sector pertenece"""
-
 
 ######## PANTALLA DE INICIO STREAMLIT ################
 # Pantalla de inicio donde se pide la API KEY de OpenRouter
 # Sidebar con input box para la API KEY
 st.sidebar.header("Parametros")
 # escribir en input box la api key, esto lo haremos en la app streamlit, no necesitas añadir la clave en el código
-sidebar_api_key = st.sidebar.text_input("API Key de OpenRouter", type="password")
+sidebar_api_key = st.sidebar.text_input("API Key de OpenRouter tus muertos", type="password")
 # si no ha escrito nada mostrar mensaje, el if not funciona de la siguiente manera: mientras no se haya introducido la clave se seguira mostranso el mensaje
 # cuando hayamos introducido la clave, el if not sera false y se saltara este bloque, como veremos después.
 if not sidebar_api_key:
@@ -50,8 +54,11 @@ if not sidebar_api_key.startswith("sk-or-"):
     st.error("API KEY no válida. Pon tu clave de OpenRouter en el código.")
     st.stop()
 
+# Fin de la primera sesión
 
 #####################################################
+
+# Inicio de la segunda sesión.
 
 # Si todo va bien, mostramos la nueva pantalla de carga de archivos Excel
 
